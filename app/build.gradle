@@ -52,6 +52,8 @@ android {
 
 dependencies {
 
+    implementation "com.google.accompanist:accompanist-systemuicontroller:0.21.4-beta"
+
     //firebase/firestore
     implementation platform('com.google.firebase:firebase-bom:29.0.1')
     //firebase auth and firestore
