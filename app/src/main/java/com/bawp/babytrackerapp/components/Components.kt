@@ -165,13 +165,13 @@ fun RoundedButton(
 }
 
 @Composable
-fun ReaderAppBar(
+fun MainAppBar(
     title: String,
     icon: ImageVector? = null,
     showProfile: Boolean = true,
     navController: NavController,
     onBackArrowClicked:() -> Unit = {}
-                ) {
+              ) {
 
     TopAppBar(title = {
         Row(verticalAlignment = Alignment.CenterVertically){

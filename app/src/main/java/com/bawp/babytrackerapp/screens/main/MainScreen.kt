@@ -27,6 +27,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.foundation.layout.Row
 import androidx.compose.material.icons.filled.Info
+import com.bawp.babytrackerapp.navigation.BabyScreens
 
 @Composable
 fun MainScreen(navController: NavController) {
@@ -39,7 +40,9 @@ fun MainScreen(navController: NavController) {
                  )
     }, floatingActionButton = {
         FloatingActionButton(
-            onClick = { /*TODO*/ },
+            onClick = {
+                      navController.navigate(BabyScreens.MenuScreen.name)
+            },
             shape = CircleShape.copy(CornerSize(36.dp)),
                             ) {
             Icon(

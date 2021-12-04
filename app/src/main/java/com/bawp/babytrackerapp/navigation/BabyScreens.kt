@@ -4,6 +4,7 @@ enum class BabyScreens {
     SplashScreen,
     LoginScreen,
     MainScreen,
+    MenuScreen,
     SettingsScreen,
     NotesScreen,
 

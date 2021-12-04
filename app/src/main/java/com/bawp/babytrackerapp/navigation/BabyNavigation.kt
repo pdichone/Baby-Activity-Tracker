@@ -1,5 +1,6 @@
 package com.bawp.babytrackerapp.navigation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.compose.NavHost
@@ -8,7 +9,9 @@ import androidx.navigation.compose.rememberNavController
 import com.bawp.babytrackerapp.screens.main.MainScreen
 import com.bawp.babytrackerapp.screens.SplashScreen
 import com.bawp.babytrackerapp.screens.login.LoginScreen
+import com.bawp.babytrackerapp.screens.menu.MainMenuScreen
 
+@ExperimentalFoundationApi
 @ExperimentalComposeUiApi
 @Composable
 fun BabyNavigation() {
@@ -28,6 +31,10 @@ fun BabyNavigation() {
 
         composable(BabyScreens.LoginScreen.name) {
             LoginScreen(navController = navController)
+        }
+
+        composable(BabyScreens.MenuScreen.name) {
+            MainMenuScreen(navController = navController)
         }
 
     }
