@@ -26,6 +26,7 @@ import com.bawp.babytrackerapp.R
 import com.bawp.babytrackerapp.navigation.BabyScreens
 import kotlinx.coroutines.delay
 import androidx.compose.foundation.layout.Column
+import com.google.firebase.auth.FirebaseAuth
 
 @Composable
 fun SplashScreen(navController: NavController) {
@@ -41,7 +42,12 @@ fun SplashScreen(navController: NavController) {
                        )
 
         delay(2000L)
-        navController.navigate(BabyScreens.MainScreen.name)
+        if (FirebaseAuth.getInstance().currentUser?.email.isNullOrEmpty()){
+            navController.navigate(BabyScreens.LoginScreen.name)
+        }else {
+            navController.navigate(BabyScreens.MainScreen.name)
+        }
+
     })
     Column(Modifier.fillMaxHeight().fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,

@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">BabyTrackerApp</string>
+    <string name="create_acct">Create Account</string>
 </resources>

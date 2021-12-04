@@ -1,15 +1,15 @@
 package com.bawp.babytrackerapp.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavType
+import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.bawp.babytrackerapp.screens.MainScreen
+import com.bawp.babytrackerapp.screens.main.MainScreen
 import com.bawp.babytrackerapp.screens.SplashScreen
+import com.bawp.babytrackerapp.screens.login.LoginScreen
 
+@ExperimentalComposeUiApi
 @Composable
 fun BabyNavigation() {
 
@@ -24,6 +24,10 @@ fun BabyNavigation() {
         val mainRoute = BabyScreens.MainScreen.name
         composable(mainRoute) {
             MainScreen(navController = navController)
+        }
+
+        composable(BabyScreens.LoginScreen.name) {
+            LoginScreen(navController = navController)
         }
 
     }
