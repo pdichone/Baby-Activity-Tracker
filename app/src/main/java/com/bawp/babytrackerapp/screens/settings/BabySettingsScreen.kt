@@ -34,6 +34,7 @@ import com.bawp.babytrackerapp.R
 import com.bawp.babytrackerapp.components.EmailInput
 import com.bawp.babytrackerapp.components.MainAppBar
 import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.*
@@ -58,6 +59,12 @@ fun BabySettingsScreen(navController: NavController) {
 
           UserForm(){ name, date, timestamp ->
               Log.d("TAG", "BabySettingsScreen: $name $date $timestamp")
+              FirebaseFirestore.getInstance().collection("babies")
+                  .add(
+                      hashMapOf("name" to name,
+                          "dob" to timestamp,
+                               "pic" to "")
+                      )
 
           }
 
@@ -76,6 +83,7 @@ fun UserForm(
     isCreateAccount: Boolean = false,
     onDone: (String, String, Timestamp) -> Unit = { name, dob, timeStamp ->}
             ) {
+
 
 
 
@@ -125,7 +133,7 @@ fun UserForm(
             date.value = "${month+1}/$dayOfMonth/$year"
 
 
-            calendar.set(year + 1900, month, dayOfMonth)
+            calendar.set(year , month, dayOfMonth)
             calendar.time
                //Date(year, month, dayOfMonth)
             dateState.value = Timestamp(calendar.time)
@@ -211,13 +219,14 @@ fun UserForm(
         }
        // val dialogState = rememberMaterialDialogState()
 
-        Button(onClick = { /*
-           Save baby to db
-           convert this date to Timestamp
-
-        */
-            //dialogState.show()
+        Button(onClick = {
             onDone(name.value, date.value, dateState.value)
+//            FirebaseFirestore.getInstance().collection("babies")
+//                .add(
+//                    hashMapOf("name" to name.value,
+//                              "dob" to dateState.value)
+//                    )
+
             keyboardController?.hide()
         }) {
             Text(text = "Save")
