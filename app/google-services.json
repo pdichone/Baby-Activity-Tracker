@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "",
-    "project_id": "babytracker-",
-    "storage_bucket": "-19389.appspot.com"
+    "project_number": "860602301875",
+    "project_id": "babytracker-19389",
+    "storage_bucket": "babytracker-19389.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:860602301875:android:f66",
+        "mobilesdk_app_id": "1:860602301875:android:f6d0548cb6f2e20b1ddfc6",
         "android_client_info": {
           "package_name": "com.bawp.babytrackerapp"
         }
       },
       "oauth_client": [
         {
-          "client_id": "860602301875-.apps.googleusercontent.com",
+          "client_id": "860602301875-66tdfr6asku8vfmer1k26civd35595nk.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyCD5gan-"
+          "current_key": "AIzaSyCD5gan-FOdcBoIiCFyyf4MmfS1EuSaixM"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "860602301875-.apps.googleusercontent.com",
+              "client_id": "860602301875-66tdfr6asku8vfmer1k26civd35595nk.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

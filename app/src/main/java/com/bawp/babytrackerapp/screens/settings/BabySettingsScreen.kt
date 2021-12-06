@@ -1,9 +1,13 @@
 package com.bawp.babytrackerapp.screens.settings
 
 import android.app.DatePickerDialog
+import android.app.TimePickerDialog
+import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Context
+import android.content.res.Resources
 import android.util.Log
 import android.widget.DatePicker
+import android.widget.TimePicker
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -19,7 +23,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
@@ -31,8 +34,8 @@ import com.bawp.babytrackerapp.R
 import com.bawp.babytrackerapp.components.EmailInput
 import com.bawp.babytrackerapp.components.MainAppBar
 import com.google.firebase.Timestamp
-import com.google.type.DateTime
-import java.text.DateFormat
+import java.time.LocalDate
+import java.time.LocalTime
 import java.util.*
 
 @ExperimentalComposeUiApi
@@ -58,6 +61,7 @@ fun BabySettingsScreen(navController: NavController) {
 
           }
 
+
         }
 
 
@@ -73,9 +77,13 @@ fun UserForm(
     onDone: (String, String, Timestamp) -> Unit = { name, dob, timeStamp ->}
             ) {
 
+
+
     val year: Int
     val month: Int
     val day: Int
+    val mHour: Int
+    val mMinute: Int
 
     val calendar = Calendar.getInstance()
     year = calendar.get(Calendar.YEAR)
@@ -83,10 +91,12 @@ fun UserForm(
     day = calendar.get(Calendar.DAY_OF_MONTH)
     calendar.time = Date()
 
+    // Get Current Time
+
+    mHour = calendar.get(Calendar.HOUR_OF_DAY);
+    mMinute = calendar.get(Calendar.MINUTE);
+
     val context = LocalContext.current
-
-
-
 
     val name = rememberSaveable { mutableStateOf("") }
     val date = remember { mutableStateOf("") }
@@ -101,19 +111,32 @@ fun UserForm(
         mutableStateOf(Timestamp(calendar.time))
     }
 
+   // val dialogState = rememberMaterialDialogState()
+
+
+    val timePickerDialog = TimePickerDialog(context, { _, hourOfDay, minute ->
+        Log.d("TAG", "UserForm: $hourOfDay $minute")
+
+    }, mHour, mMinute, false)
+
     val datePickerDialog = DatePickerDialog(
         context,
         { datePicker: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            date.value = "$dayOfMonth/$month/$year"
+            date.value = "${month+1}/$dayOfMonth/$year"
 
-            val newDate =
-                DateFormat.getDateInstance().parse(date.value.toString()) //NOT Working!
-                //calendar.set(year + 1900, month, dayOfMonth)
-                //DateTime.newBuilder().setYear(year).setMonth(month).setDay(dayOfMonth)
-               // .build()
 
-            dateState.value =  Timestamp(newDate)
+            calendar.set(year + 1900, month, dayOfMonth)
+            calendar.time
+               //Date(year, month, dayOfMonth)
+            dateState.value = Timestamp(calendar.time)
+//            val newDate =
+//                DateFormat.getDateInstance().parse(date.value.toString()) //NOT Working!
+//                //calendar.set(year + 1900, month, dayOfMonth)
+//                //DateTime.newBuilder().setYear(year).setMonth(month).setDay(dayOfMonth)
+//               // .build()
+//
             Log.d("STX", "UserForm: ${dateState.value}")
+            Log.d("STX", "DAte: ${date.value}")
         }, year, month, day)
 
     val modifier = Modifier
@@ -150,8 +173,7 @@ fun UserForm(
                 if (!valid) return@KeyboardActions
                 onDone(name.value, date.value, dateState.value)
 
-            },
-                  )
+            },)
 
 
         Surface(
@@ -160,6 +182,7 @@ fun UserForm(
                 .padding(10.dp)
                 .border(0.5.dp, MaterialTheme.colors.onSurface.copy(alpha = 0.5f))
                 .clickable {
+                    //timePickerDialog.show()
                     datePickerDialog.show()
 
                 },
@@ -186,13 +209,14 @@ fun UserForm(
             }
 
         }
-
+       // val dialogState = rememberMaterialDialogState()
 
         Button(onClick = { /*
            Save baby to db
            convert this date to Timestamp
 
         */
+            //dialogState.show()
             onDone(name.value, date.value, dateState.value)
             keyboardController?.hide()
         }) {
@@ -272,6 +296,8 @@ fun ShowDatePicker(context: Context, onDateSelected: (Long) -> Unit = {}){
 
 
 }
+
+
 
 
 fun dateToTimestamp(date: Date?): Long {
