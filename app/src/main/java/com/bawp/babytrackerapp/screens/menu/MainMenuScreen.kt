@@ -1,5 +1,6 @@
 package com.bawp.babytrackerapp.screens.menu
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -45,7 +46,7 @@ fun MainMenuScreen(navController: NavController) {
                          )
 //source: https://alexzh.com/jetpack-compose-building-grids/
         ShowMenuGrid(data) {
-
+            Log.d("TAG", "MainMenuScreen: $it")
         }
 
     }
@@ -62,9 +63,11 @@ private fun ShowMenuGrid(data: List<MenuItems>,
         items(items = data) { item ->
 
             Card(
-                modifier = Modifier.padding(12.dp).clickable {
-                    onItemClicked.invoke(item.title)
-                },
+                modifier = Modifier
+                    .padding(12.dp)
+                    .clickable {
+                        onItemClicked.invoke(item.title)
+                    },
                 backgroundColor = Color(0xFFEF9A9A),
                 elevation = 4.dp,
                 ) {
@@ -84,8 +87,6 @@ private fun ShowMenuGrid(data: List<MenuItems>,
             }
 
         }
-
-
     }
 }
 

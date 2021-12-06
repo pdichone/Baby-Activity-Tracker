@@ -82,7 +82,11 @@ fun MainScreen(navController: NavController) {
                             Surface(
                                 Modifier
                                     .clip(shape = CircleShape)
-                                    .padding(6.dp),
+                                    .padding(6.dp)
+                                    .clickable {
+                                               //go to baby settings
+                                               navController.navigate(BabyScreens.BabySettingsScreen.name)
+                                    },
                                 color = Color(0xFDD6D1D6)
                                    ) {
                                 Image(

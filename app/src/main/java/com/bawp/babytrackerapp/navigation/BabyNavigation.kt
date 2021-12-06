@@ -10,6 +10,7 @@ import com.bawp.babytrackerapp.screens.main.MainScreen
 import com.bawp.babytrackerapp.screens.SplashScreen
 import com.bawp.babytrackerapp.screens.login.LoginScreen
 import com.bawp.babytrackerapp.screens.menu.MainMenuScreen
+import com.bawp.babytrackerapp.screens.settings.BabySettingsScreen
 
 @ExperimentalFoundationApi
 @ExperimentalComposeUiApi
@@ -35,6 +36,10 @@ fun BabyNavigation() {
 
         composable(BabyScreens.MenuScreen.name) {
             MainMenuScreen(navController = navController)
+        }
+
+        composable(BabyScreens.BabySettingsScreen.name) {
+            BabySettingsScreen(navController = navController)
         }
 
     }

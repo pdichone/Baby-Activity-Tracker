@@ -5,6 +5,7 @@ enum class BabyScreens {
     LoginScreen,
     MainScreen,
     MenuScreen,
+    BabySettingsScreen,
     SettingsScreen,
     NotesScreen,
 
