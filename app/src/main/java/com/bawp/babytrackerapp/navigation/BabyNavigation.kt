@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.bawp.babytrackerapp.screens.main.MainScreen
 import com.bawp.babytrackerapp.screens.SplashScreen
+import com.bawp.babytrackerapp.screens.feed.FeedScreen
 import com.bawp.babytrackerapp.screens.login.LoginScreen
 import com.bawp.babytrackerapp.screens.menu.MainMenuScreen
 import com.bawp.babytrackerapp.screens.settings.BabySettingsScreen
@@ -40,6 +41,9 @@ fun BabyNavigation() {
 
         composable(BabyScreens.BabySettingsScreen.name) {
             BabySettingsScreen(navController = navController)
+        }
+        composable(BabyScreens.FeedScreen.name) {
+            FeedScreen(navController = navController)
         }
 
     }

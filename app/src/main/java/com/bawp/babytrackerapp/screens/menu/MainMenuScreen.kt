@@ -22,6 +22,7 @@ import com.bawp.babytrackerapp.components.MainAppBar
 import kotlin.random.Random
 import androidx.compose.ui.res.painterResource
 import com.bawp.babytrackerapp.R
+import com.bawp.babytrackerapp.navigation.BabyScreens
 
 @ExperimentalFoundationApi
 @Composable
@@ -47,6 +48,7 @@ fun MainMenuScreen(navController: NavController) {
 //source: https://alexzh.com/jetpack-compose-building-grids/
         ShowMenuGrid(data) {
             Log.d("TAG", "MainMenuScreen: $it")
+            navController.navigate(BabyScreens.FeedScreen.name)
         }
 
     }

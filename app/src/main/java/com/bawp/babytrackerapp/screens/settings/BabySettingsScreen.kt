@@ -59,20 +59,13 @@ fun BabySettingsScreen(navController: NavController) {
 
           UserForm(){ name, date, timestamp ->
               Log.d("TAG", "BabySettingsScreen: $name $date $timestamp")
+              //Todo: create a Baby model class
               FirebaseFirestore.getInstance().collection("babies")
                   .add(
-                      hashMapOf("name" to name,
-                          "dob" to timestamp,
-                               "pic" to "")
+                      hashMapOf("name" to name, "dob" to timestamp, "pic" to "")
                       )
-
           }
-
-
         }
-
-
-
     }
 }
 
@@ -83,9 +76,6 @@ fun UserForm(
     isCreateAccount: Boolean = false,
     onDone: (String, String, Timestamp) -> Unit = { name, dob, timeStamp ->}
             ) {
-
-
-
 
     val year: Int
     val month: Int
@@ -129,7 +119,7 @@ fun UserForm(
 
     val datePickerDialog = DatePickerDialog(
         context,
-        { datePicker: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
+        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
             date.value = "${month+1}/$dayOfMonth/$year"
 
 
@@ -137,12 +127,7 @@ fun UserForm(
             calendar.time
                //Date(year, month, dayOfMonth)
             dateState.value = Timestamp(calendar.time)
-//            val newDate =
-//                DateFormat.getDateInstance().parse(date.value.toString()) //NOT Working!
-//                //calendar.set(year + 1900, month, dayOfMonth)
-//                //DateTime.newBuilder().setYear(year).setMonth(month).setDay(dayOfMonth)
-//               // .build()
-//
+
             Log.d("STX", "UserForm: ${dateState.value}")
             Log.d("STX", "DAte: ${date.value}")
         }, year, month, day)

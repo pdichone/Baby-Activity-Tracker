@@ -6,27 +6,21 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.rounded.Add
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bawp.babytrackerapp.R
-import com.bawp.babytrackerapp.components.RoundedButton
-import androidx.compose.material.Surface
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextDecoration
-import androidx.compose.foundation.layout.Column
-import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.foundation.layout.Row
-import androidx.compose.material.icons.filled.Info
 import com.bawp.babytrackerapp.navigation.BabyScreens
 
 @Composable
@@ -43,8 +37,7 @@ fun MainScreen(navController: NavController) {
             onClick = {
                       navController.navigate(BabyScreens.MenuScreen.name)
             },
-            shape = CircleShape.copy(CornerSize(36.dp)),
-                            ) {
+            shape = CircleShape.copy(CornerSize(36.dp)),) {
             Icon(
                 imageVector = Icons.Rounded.Add,
                 contentDescription = null,
@@ -59,11 +52,9 @@ fun MainScreen(navController: NavController) {
                 .fillMaxHeight()
                 .background(MaterialTheme.colors.background)
                 .verticalScroll(rememberScrollState())
-
             Column(
                 modifier, horizontalAlignment = Alignment.Start
                   ) {
-
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -74,11 +65,9 @@ fun MainScreen(navController: NavController) {
                     border = BorderStroke(1.dp, Color.White)
                     ) {
                     Column(
-
                         verticalArrangement = Arrangement.SpaceAround,
-
                         ) {
-                        Row() {
+                        Row {
                             Surface(
                                 Modifier
                                     .clip(shape = CircleShape)
