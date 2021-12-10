@@ -7,8 +7,12 @@ enum class BabyScreens {
     MenuScreen,
     BabySettingsScreen,
     FeedScreen,
+    DiapersScreen,
     SettingsScreen,
-    NotesScreen,
+    PumpingScreen,
+    NotesScreen,;
+
+
 
 
 }

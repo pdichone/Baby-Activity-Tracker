@@ -35,7 +35,9 @@ import com.bawp.babytrackerapp.util.rememberComposeVerticalSliderState
 import androidx.compose.foundation.layout.Column
 import androidx.compose.ui.res.painterResource
 import com.bawp.babytrackerapp.R
+import com.bawp.babytrackerapp.components.ButtonChips
 import com.bawp.babytrackerapp.model.Feed
+import com.bawp.babytrackerapp.util.getTime
 import com.bawp.babytrackerapp.util.saveToFirebase
 import com.google.firebase.auth.FirebaseAuth
 import java.sql.Time
@@ -140,17 +142,18 @@ fun ShowBottleView(
                         }
 
                         //Next button
-                        Button(onClick = {
-                            //hide Bottle and breast milk formulat buttons and show time screen
+                        OutlinedButton(onClick = {
+                            //hide Bottle and breast milk formulate buttons and show time screen
                             isShowLog.value = !isShowLog.value
 
-                        }) {
+                        }, shape = CircleShape) {
+
 
                             Icon(
                                 imageVector = Icons.Default.ArrowForward,
                                 contentDescription = null
                                 )
-                            Text(text = "Next")
+
 
                         }
 
@@ -205,7 +208,7 @@ val context = LocalContext.current
         { _: DatePicker, mYear: Int, mMonth: Int, mDay: Int ->
 
             dateToShow.value = "${mMonth+1}/$mDay/$mYear"
-            date.value = "${month+1}$day$year"
+            date.value = "${mMonth+1}/$mDay/$mYear"
             calendar.set(year , month, day)
             Log.d("ToShow", "ShowLogTimeView: ${dateToShow.value}")
 
@@ -216,10 +219,9 @@ val context = LocalContext.current
 
 
     val timePickerDialog = TimePickerDialog(
-        context, TimePickerDialog.OnTimeSetListener { _, hourOfDay, minute ->
+        context, { _, hourOfDay, minute ->
            // time.value = "$hourOfDay:$minute"
             time.value = getTime(hr = hourOfDay, min = minute).toString()
-
 
             Log.d("TAG", "ShowLogTimeView: $hourOfDay:$minute")
         }, mHour, mMinute, false)
@@ -254,26 +256,29 @@ val context = LocalContext.current
         Row(modifier = Modifier.fillMaxWidth(),
            horizontalArrangement = Arrangement.SpaceBetween,
            verticalAlignment = Alignment.CenterVertically) {
-            Button(onClick = { datePickerDialog.show() }) {
+            OutlinedButton(onClick = { datePickerDialog.show() },
+                          shape = CircleShape) {
                 Text(text = "Date")
 
             }
 
-            Button(onClick = { timePickerDialog.show()}) {
+            Column(modifier = Modifier.padding(5.dp)) {
+
+                Text(text = "Date: ${dateToShow.value}", style = MaterialTheme.typography.caption)
+                Text(text = "Time: ${time.value}",style = MaterialTheme.typography.caption)
+            }
+            OutlinedButton(onClick = { timePickerDialog.show()},
+                          shape = CircleShape) {
                 Text(text = "Time")
 
             }
         }
 
-        Column(modifier = Modifier.padding(5.dp)) {
 
-            Text(text = "Date: ${dateToShow.value}", style = MaterialTheme.typography.body1)
-            Text(text = "Time: ${time.value}",style = MaterialTheme.typography.body1)
-        }
 
     }
 
-    Button(onClick = {
+    OutlinedButton(onClick = {
         /**
          * Save a Feed Object
          * we save amount, baby id, userId, time and date, type of feed
@@ -289,7 +294,7 @@ val context = LocalContext.current
             timeEntered = time.value)
       saveToFirebase(mFeed, navController)
 
-    }) {
+    }, shape = CircleShape) {
         Text(text = "Save")
 
     }
@@ -349,65 +354,4 @@ fun ShowBreastView(navController: NavController, isShowLog: MutableState<Boolean
 
 }
 
-@Composable
-private fun ButtonChips(items: List<String>, selectedIndex: MutableState<Int>) {
-    var selectedIndex1 = selectedIndex.value
-    items.forEachIndexed { index, item ->
-        OutlinedButton(
-            onClick = { selectedIndex.value = index },
-            modifier = when (index) {
-                0 -> {
-                    if (selectedIndex.value == index) {
-                        Modifier
-                            .offset(0.dp, 0.dp)
-                            .zIndex(1f)
-                            .clip(shape = CircleShape.copy(all = CornerSize(35.dp)))
-                            .border(
-                                width = 5.dp, color = Color(0xFF66BB6A), shape = CircleShape
-                                   )
-                    } else {
-                        Modifier
-                            .offset(0.dp, 0.dp)
-                            .zIndex(0f)
-                    }
-                }
-                else -> {
-                    val offset = -1 * index
-                    if (selectedIndex.value == index) {
-                        Modifier
-                            .offset(offset.dp, 0.dp)
-                            .zIndex(1f)
-                            .clip(shape = CircleShape.copy(all = CornerSize(35.dp)))
-                            .border(
-                                width = 5.dp, color = Color(0xFF66BB6A), shape = CircleShape
-                                   )
 
-
-                    } else {
-                        Modifier
-                            .offset(offset.dp, 0.dp)
-                            .zIndex(0f)
-                    }
-                }
-            },
-
-            )
-
-        {
-            Text(
-                text = item, color = if (selectedIndex.value == index) {
-                    MaterialTheme.colors.primary
-                } else {
-                    Color.DarkGray.copy(alpha = 0.9f)
-                }, modifier = Modifier.padding(horizontal = 8.dp)
-                )
-        }
-    }
-}
-
-private fun getTime(hr: Int, min: Int): String? {
-    val tme = Time(hr, min, 0) //seconds by default set to zero
-    val formatter: Format
-    formatter = SimpleDateFormat("h:mm a")
-    return formatter.format(tme)
-}

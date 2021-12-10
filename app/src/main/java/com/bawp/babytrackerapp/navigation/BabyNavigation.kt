@@ -3,13 +3,16 @@ package com.bawp.babytrackerapp.navigation
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.ExperimentalComposeUiApi
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.bawp.babytrackerapp.screens.DiapersScreen
 import com.bawp.babytrackerapp.screens.main.MainScreen
 import com.bawp.babytrackerapp.screens.SplashScreen
 import com.bawp.babytrackerapp.screens.feed.FeedScreen
 import com.bawp.babytrackerapp.screens.login.LoginScreen
+import com.bawp.babytrackerapp.screens.main.MainScreenViewModel
 import com.bawp.babytrackerapp.screens.menu.MainMenuScreen
 import com.bawp.babytrackerapp.screens.settings.BabySettingsScreen
 
@@ -28,7 +31,8 @@ fun BabyNavigation() {
         //www.google.com/cityname="seattle"
         val mainRoute = BabyScreens.MainScreen.name
         composable(mainRoute) {
-            MainScreen(navController = navController)
+            val viewModel = hiltViewModel<MainScreenViewModel>()
+            MainScreen(navController = navController, viewModel = viewModel)
         }
 
         composable(BabyScreens.LoginScreen.name) {
@@ -36,7 +40,8 @@ fun BabyNavigation() {
         }
 
         composable(BabyScreens.MenuScreen.name) {
-            MainMenuScreen(navController = navController)
+            val viewModel = hiltViewModel<MainScreenViewModel>()
+            MainMenuScreen(navController = navController, viewModel = viewModel)
         }
 
         composable(BabyScreens.BabySettingsScreen.name) {
@@ -44,6 +49,10 @@ fun BabyNavigation() {
         }
         composable(BabyScreens.FeedScreen.name) {
             FeedScreen(navController = navController)
+        }
+
+        composable(BabyScreens.DiapersScreen.name) {
+            DiapersScreen(navController = navController)
         }
 
     }

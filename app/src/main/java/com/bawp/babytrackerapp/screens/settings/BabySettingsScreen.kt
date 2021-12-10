@@ -61,8 +61,9 @@ fun BabySettingsScreen(navController: NavController) {
               Log.d("TAG", "BabySettingsScreen: $name $date $timestamp")
               //Todo: create a Baby model class
               FirebaseFirestore.getInstance().collection("babies")
-                  .add(
-                      hashMapOf("name" to name, "dob" to timestamp, "pic" to "")
+                  .document("IdHoPLrao8NpyWKS0d1G")//for now - later we might need to change this
+                  .update(
+                      hashMapOf("name" to name, "dob" to timestamp, "pic" to "") as Map<String, Any>
                       )
           }
         }

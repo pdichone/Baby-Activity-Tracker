@@ -19,14 +19,17 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bawp.babytrackerapp.components.MainAppBar
-import kotlin.random.Random
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.bawp.babytrackerapp.R
+import com.bawp.babytrackerapp.components.ShowMenuGrid
 import com.bawp.babytrackerapp.navigation.BabyScreens
+import com.bawp.babytrackerapp.screens.main.MainScreenViewModel
 
 @ExperimentalFoundationApi
 @Composable
-fun MainMenuScreen(navController: NavController) {
+fun MainMenuScreen(navController: NavController,
+                   viewModel: MainScreenViewModel = hiltViewModel()) {
     Scaffold(topBar = {
         MainAppBar(
             title = "Menu", icon = Icons.Default.ArrowBack, false, navController = navController
@@ -48,48 +51,17 @@ fun MainMenuScreen(navController: NavController) {
 //source: https://alexzh.com/jetpack-compose-building-grids/
         ShowMenuGrid(data) {
             Log.d("TAG", "MainMenuScreen: $it")
-            navController.navigate(BabyScreens.FeedScreen.name)
+             when (it) {
+                  "Feed" ->   navController.navigate(BabyScreens.FeedScreen.name)
+                  "Diaper" ->   navController.navigate(BabyScreens.DiapersScreen.name)
+                // "Pumping" ->   navController.navigate(BabyScreens.PumpingScreen.name)
+             }
+
         }
 
     }
 }
 
-@ExperimentalFoundationApi
-@Composable
-private fun ShowMenuGrid(data: List<MenuItems>,
-                        onItemClicked: (String) -> Unit = {}) {
-    LazyVerticalGrid(
-        cells = GridCells.Fixed(2),
-        contentPadding = PaddingValues(8.dp)) {
 
-        items(items = data) { item ->
-
-            Card(
-                modifier = Modifier
-                    .padding(12.dp)
-                    .clickable {
-                        onItemClicked.invoke(item.title)
-                    },
-                backgroundColor = Color(0xFFEF9A9A),
-                elevation = 4.dp,
-                ) {
-                Column(
-                    modifier = Modifier.padding(4.dp),
-                    verticalArrangement = Arrangement.SpaceEvenly,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                      ) {
-                    Image(
-                        painter = item.icon, contentDescription = null, modifier = Modifier.size(35.dp)
-                         )
-                    Text(
-                        text = item.title,
-                        style = MaterialTheme.typography.subtitle2,
-                        )
-                }
-            }
-
-        }
-    }
-}
 
 data class MenuItems(val icon: Painter, val title: String)

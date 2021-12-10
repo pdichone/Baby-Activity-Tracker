@@ -2,8 +2,16 @@ package com.bawp.babytrackerapp.components
 
 import android.content.Context
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.GridCells
+import androidx.compose.foundation.lazy.LazyVerticalGrid
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -30,11 +38,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
 import com.bawp.babytrackerapp.navigation.BabyScreens
+import com.bawp.babytrackerapp.screens.menu.MenuItems
 import com.google.firebase.auth.FirebaseAuth
+import java.sql.Time
+import java.text.Format
+import java.text.SimpleDateFormat
 
 @Composable
 fun Logo(modifier: Modifier = Modifier) {
@@ -248,6 +262,164 @@ fun TitleSection(modifier: Modifier = Modifier,
 
     }
 
+}
+
+@ExperimentalFoundationApi
+@Composable
+ fun ShowMenuGrid(data: List<MenuItems>,
+                         onItemClicked: (String) -> Unit = {}) {
+    LazyVerticalGrid(
+        cells = GridCells.Fixed(2),
+        contentPadding = PaddingValues(8.dp)) {
+
+        items(items = data) { item ->
+
+            Card(
+                modifier = Modifier
+                    .padding(12.dp)
+                    .clickable {
+                        onItemClicked.invoke(item.title)
+                    },
+                backgroundColor = Color(0xFFEF9A9A),
+                elevation = 4.dp,
+                ) {
+                Column(
+                    modifier = Modifier.padding(4.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                      ) {
+                    Image(
+                        painter = item.icon, contentDescription = null, modifier = Modifier.size(35.dp)
+                         )
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.subtitle2,
+                        )
+                }
+            }
+
+        }
+    }
+}
+@Composable
+ fun ButtonChips(items: List<String>,
+                 selectedIndex: MutableState<Int>,
+                borderValue: Dp = 2.dp,
+                borderColor: Color = Color.DarkGray) {
+    items.forEachIndexed { index, item ->
+        OutlinedButton(
+            onClick = { selectedIndex.value = index },
+            modifier = when (index) {
+                0 -> {
+                    if (selectedIndex.value == index) {
+                        Modifier
+                            .offset(0.dp, 0.dp)
+                            .zIndex(1f)
+                            .clip(shape = CircleShape.copy(all = CornerSize(35.dp)))
+                            .border(
+                                width = borderValue, color = borderColor, shape = CircleShape
+                                   )
+                    } else {
+                        Modifier
+                            .offset(0.dp, 0.dp)
+                            .zIndex(0f)
+                    }
+                }
+                else -> {
+                    val offset = -1 * index
+                    if (selectedIndex.value == index) {
+                        Modifier
+                            .offset(offset.dp, 0.dp)
+                            .zIndex(1f)
+                            .clip(shape = CircleShape.copy(all = CornerSize(35.dp)))
+                            .border(
+                                width = borderValue, color = borderColor, shape = CircleShape
+                                   )
+
+
+                    } else {
+                        Modifier
+                            .offset(offset.dp, 0.dp)
+                            .zIndex(0f)
+                    }
+                }
+            },
+
+            )
+
+        {
+            Text(
+                text = item, color = if (selectedIndex.value == index) {
+                    MaterialTheme.colors.primary
+                } else {
+                    Color.DarkGray.copy(alpha = 0.9f)
+                }, modifier = Modifier.padding(horizontal = 8.dp)
+                )
+        }
+    }
+}
+@Composable
+fun ButtonChipsColors(items: List<Color>,
+                selectedIndex: MutableState<Int>,
+                borderValue: Dp = 2.dp,
+                borderColor: Color = Color.DarkGray) {
+    items.forEachIndexed { index, item ->
+        OutlinedButton(
+            onClick = { selectedIndex.value = index },
+            modifier = when (index) {
+                0 -> {
+                    if (selectedIndex.value == index) {
+                        Modifier
+                            .offset(0.dp, 0.dp)
+                            .zIndex(1f)
+                            .clip(shape = CircleShape.copy(all = CornerSize(35.dp)))
+                            .border(
+                                width = borderValue,
+                                color = borderColor,
+                                shape = CircleShape
+                                   )
+                    } else {
+                        Modifier
+                            .offset(0.dp, 0.dp)
+                            .zIndex(0f)
+                    }
+                }
+                else -> {
+                    val offset = -1 * index
+                    if (selectedIndex.value == index) {
+                        Modifier
+                            .offset(offset.dp, 0.dp)
+                            .zIndex(1f)
+                            .clip(shape = CircleShape.copy(all = CornerSize(35.dp)))
+                            .border(
+                                width = borderValue, color = borderColor, shape = CircleShape
+                                   )
+
+
+                    } else {
+                        Modifier
+                            .offset(offset.dp, 0.dp)
+                            .zIndex(0f)
+                    }
+                }
+            }.wrapContentSize(align = Alignment.Center),
+            shape = CircleShape,
+           colors = ButtonDefaults.buttonColors(
+               backgroundColor = item
+
+                                               )
+            )
+
+        {
+            Text(
+                text = "", color = if (selectedIndex.value == index) {
+                    MaterialTheme.colors.primary
+                } else {
+                    Color.DarkGray.copy(alpha = 0.9f)
+                }, modifier = Modifier.padding(horizontal = 8.dp)
+                )
+        }
+    }
 }
 
 fun showToast(context: Context, msg: String) {

@@ -1,12 +1,9 @@
 package com.bawp.babytrackerapp.model
 
-import com.google.firebase.Timestamp
 import com.google.firebase.firestore.Exclude
 import com.google.firebase.firestore.PropertyName
-import com.google.firebase.firestore.ServerTimestamp
-import java.util.Date
 
-data class Feed(
+data class Diaper(
     @Exclude var id: String? = null,
 
     @get:PropertyName("user_id")
@@ -17,19 +14,16 @@ data class Feed(
     @set:PropertyName("baby_id")
     var babyId: String? = null,
 
-    @get:PropertyName("food_type")
-    @set:PropertyName("food_type")
-    var foodType: String? = null, //breast milk or formula
-
-    var feed: String? = null, // Bottle, Breast
-
+    @get:PropertyName("activity_type")
+    @set:PropertyName("activity_type")
+    var activityType: String? = null, //always Diaper
 
     var date: String? = null,
-    var amount: Int? = null,
 
     @get:PropertyName("time_entered")
     @set:PropertyName("time_entered")
-    var timeEntered: String? = null )
+    var timeEntered: String? = null ,
 
-
-
+    var status: String? = null, //poop, pee, clean, Pee, Mixed
+    var color: String? = null // gray, yellow,brown, black, red, green
+                 )
