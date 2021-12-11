@@ -77,8 +77,7 @@ class LoginScreenViewModel: ViewModel() {
             displayName = displayName.toString(),
             avatarUrl = "",
             quote = "Life is great",
-            profession = "Android Developer",
-            id = null).toMap()
+            profession = "Android Developer",)
 
         FirebaseFirestore.getInstance().collection("users")
             .add(user)

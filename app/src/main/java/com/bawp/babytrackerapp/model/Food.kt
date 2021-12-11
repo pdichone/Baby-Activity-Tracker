@@ -6,7 +6,7 @@ import com.google.firebase.firestore.PropertyName
 import com.google.firebase.firestore.ServerTimestamp
 import java.util.Date
 
-data class Feed(
+data class Food(
     @Exclude var id: String? = null,
 
     @get:PropertyName("user_id")
@@ -29,7 +29,7 @@ data class Feed(
 
     @get:PropertyName("time_entered")
     @set:PropertyName("time_entered")
-    var timeEntered: String? = null )
+    var timeEntered: String? = null)
 
 
 

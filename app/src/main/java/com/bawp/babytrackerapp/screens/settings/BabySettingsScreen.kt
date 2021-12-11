@@ -5,9 +5,16 @@ import android.app.TimePickerDialog
 import android.app.TimePickerDialog.OnTimeSetListener
 import android.content.Context
 import android.content.res.Resources
+import android.graphics.Bitmap
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
+import android.provider.MediaStore
 import android.util.Log
 import android.widget.DatePicker
 import android.widget.TimePicker
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
@@ -15,9 +22,7 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
+import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -25,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
@@ -33,8 +39,13 @@ import androidx.navigation.NavController
 import com.bawp.babytrackerapp.R
 import com.bawp.babytrackerapp.components.EmailInput
 import com.bawp.babytrackerapp.components.MainAppBar
+import com.bawp.babytrackerapp.navigation.BabyScreens
 import com.google.firebase.Timestamp
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.storage.FirebaseStorage
+import com.google.firebase.storage.ktx.storage
+import java.io.File
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.*
@@ -43,6 +54,8 @@ import java.util.*
 @Composable
 fun BabySettingsScreen(navController: NavController) {
 
+val firestore = FirebaseFirestore.getInstance().collection("babies")
+    val storage = FirebaseStorage.getInstance().reference
 
     Scaffold(topBar = {
         MainAppBar(title = "Settings",
@@ -56,26 +69,52 @@ fun BabySettingsScreen(navController: NavController) {
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
               ) {
+           // RequestContentPermission()
 
-          UserForm(){ name, date, timestamp ->
-              Log.d("TAG", "BabySettingsScreen: $name $date $timestamp")
-              //Todo: create a Baby model class
-              FirebaseFirestore.getInstance().collection("babies")
-                  .document("IdHoPLrao8NpyWKS0d1G")//for now - later we might need to change this
+          UserForm(){ name, date, timestamp, imageUri ->
+              var photoUrl = ""
+
+              Log.d("TAG", "BabySettingsScreen: $name $date $timestamp $imageUri")
+              val imageRef = storage.child("images/"+ FirebaseAuth.getInstance().currentUser!!.uid
+                                          + "/" +imageUri.lastPathSegment)
+              val uploadTask = imageRef.putFile(imageUri)
+              uploadTask.addOnSuccessListener {
+                  val downloadUrl = imageRef.downloadUrl
+                  downloadUrl.addOnSuccessListener {
+                      photoUrl = it.toString()
+                      //update our Cloud Firestore with the public image URI
+                      FirebaseFirestore.getInstance().collection("babies")
+                  .document("shw7hvzJLcJZkQnW3HBP")//for now - later we might need to change this
                   .update(
-                      hashMapOf("name" to name, "dob" to timestamp, "pic" to "") as Map<String, Any>
-                      )
+                      hashMapOf("name" to name, "dob" to timestamp, "pic" to photoUrl) as Map<String, Any>
+                      ).addOnSuccessListener {
+                              navController.navigate(BabyScreens.MainScreen.name)
+                          }
+
+
+                  }
+
+              }
+
+
+              //Todo: create a Baby model class
+//              FirebaseFirestore.getInstance().collection("babies")
+//                  .document("IdHoPLrao8NpyWKS0d1G")//for now - later we might need to change this
+//                  .update(
+//                      hashMapOf("name" to name, "dob" to timestamp, "pic" to "") as Map<String, Any>
+//                      )
           }
         }
     }
 }
+
 
 @ExperimentalComposeUiApi
 @Composable
 fun UserForm(
     loading: Boolean = false,
     isCreateAccount: Boolean = false,
-    onDone: (String, String, Timestamp) -> Unit = { name, dob, timeStamp ->}
+    onDone: (String, String, Timestamp, Uri) -> Unit = { name, dob, timeStamp, imageUri ->}
             ) {
 
     val year: Int
@@ -108,6 +147,17 @@ fun UserForm(
 
     val dateState = remember {
         mutableStateOf(Timestamp(calendar.time))
+    }
+
+    var imageUri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val bitmap =  remember {
+        mutableStateOf<Bitmap?>(null)
+    }
+    val launcher = rememberLauncherForActivityResult(contract =
+    ActivityResultContracts.GetContent()) { uri: Uri? ->
+        imageUri = uri
     }
 
    // val dialogState = rememberMaterialDialogState()
@@ -146,18 +196,35 @@ fun UserForm(
             Modifier
                 .clip(shape = CircleShape)
                 .padding(6.dp)
+                .size(100.dp)
                 .clickable {
                     //add baby photo
+                    launcher.launch("image/*")
                 },
             color = Color(0xFDD6D1D6)
                ) {
-            Image(
-                painter = painterResource(id = R.drawable.baby_boy),
-                contentDescription = null,
-                modifier = Modifier
-                    .size(45.dp)
-                    .padding(6.dp)
-                 )
+
+
+
+            imageUri?.let {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver,it)
+                bitmap.value = ImageDecoder.decodeBitmap(source)
+
+                bitmap.value?.let {  btm ->
+
+                    Image(bitmap = btm.asImageBitmap(),
+                        contentDescription =null,
+                        modifier = Modifier.size(100.dp))
+                }
+            }
+//            Image(
+//                painter = painterResource(id = R.drawable.baby_boy),
+//                contentDescription = null,
+//                modifier = Modifier
+//                    .size(100.dp)
+//                    .padding(6.dp)
+//                 )
         }
         EmailInput(
             emailState = name,
@@ -165,7 +232,7 @@ fun UserForm(
             enabled = !loading,
             onAction = KeyboardActions {
                 if (!valid) return@KeyboardActions
-                onDone(name.value, date.value, dateState.value)
+                onDone(name.value, date.value, dateState.value, imageUri!!)
 
             },)
 
@@ -206,7 +273,7 @@ fun UserForm(
        // val dialogState = rememberMaterialDialogState()
 
         Button(onClick = {
-            onDone(name.value, date.value, dateState.value)
+            onDone(name.value, date.value, dateState.value, imageUri!!)
 //            FirebaseFirestore.getInstance().collection("babies")
 //                .add(
 //                    hashMapOf("name" to name.value,
@@ -223,82 +290,6 @@ fun UserForm(
 
 }
 
-@Composable
-fun ShowDatePicker(context: Context, onDateSelected: (Long) -> Unit = {}){
 
-    val year: Int
-    val month: Int
-    val day: Int
-
-    val calendar = Calendar.getInstance()
-    year = calendar.get(Calendar.YEAR)
-    month = calendar.get(Calendar.MONTH)
-    day = calendar.get(Calendar.DAY_OF_MONTH)
-    calendar.time = Date()
-
-
-    val date = remember { mutableStateOf("") }
-    val datePickerDialog = DatePickerDialog(
-        context,
-        { _: DatePicker, year: Int, month: Int, dayOfMonth: Int ->
-            date.value = "$dayOfMonth/$month/$year"
-
-
-
-           //Timestamp(calendar.set(year, month, dayOfMonth))
-        }, year, month, day
-                                           )
-
-    Surface(
-        modifier = Modifier
-            .wrapContentSize(Alignment.TopStart)
-            .padding(10.dp)
-            .border(0.5.dp, MaterialTheme.colors.onSurface.copy(alpha = 0.5f))
-            .clickable {
-                datePickerDialog.show()
-
-
-            },
-        shape = RectangleShape
-       ) {
-
-        Row(modifier = Modifier
-            .fillMaxWidth()
-            .padding(6.dp),
-            horizontalArrangement = Arrangement.Start,
-           verticalAlignment = Alignment.CenterVertically) {
-
-            Icon(
-                imageVector = Icons.Default.ArrowBack,
-                contentDescription = null,
-                modifier = Modifier
-                    .size(20.dp),
-                tint = MaterialTheme.colors.onPrimary
-                )
-            Text(
-                text= if (date.value.isBlank()) "Baby's DOB" else date.value,
-                color = MaterialTheme.colors.onSurface)
-
-
-        }
-
-
-
-
-
-    }
-
-
-
-}
-
-
-
-
-fun dateToTimestamp(date: Date?): Long {
-    val cal = Calendar.getInstance(Locale.ENGLISH)
-    cal.time = date
-    return cal.timeInMillis / 1000L
-}
 
 

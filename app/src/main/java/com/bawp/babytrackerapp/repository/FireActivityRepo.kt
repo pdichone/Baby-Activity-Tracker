@@ -7,16 +7,17 @@ import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FireRepository @Inject constructor( private val queryFeed: Query){
-
-    suspend fun getAllFeeds(): DataOrException<List<Activity>, Boolean, Exception> {
+class FireActivityRepo @Inject constructor(  private val activityQuery: Query) {
+    suspend fun getAllActivities(): DataOrException<List<Activity>, Boolean, Exception> {
         val dataOrException = DataOrException<List<Activity>, Boolean, Exception>()
 
         try {
             dataOrException.loading = true
-            dataOrException.data =  queryFeed.get().await().documents.map { documentSnapshot ->
+            dataOrException.data =  activityQuery.get().await().documents.map { documentSnapshot ->
                 documentSnapshot.toObject(Activity::class.java)!!
-            }.asReversed()
+            }.sortedByDescending {
+                it.timeEntered
+            }
             if (!dataOrException.data.isNullOrEmpty()) dataOrException.loading = false
 
 
@@ -26,7 +27,4 @@ class FireRepository @Inject constructor( private val queryFeed: Query){
         return dataOrException
 
     }
-
-
-
 }

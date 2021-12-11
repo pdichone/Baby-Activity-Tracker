@@ -2,7 +2,6 @@ package com.bawp.babytrackerapp.repository
 
 import com.bawp.babytrackerapp.data.DataOrException
 import com.bawp.babytrackerapp.model.Diaper
-import com.bawp.babytrackerapp.model.Feed
 import kotlinx.coroutines.tasks.await
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query

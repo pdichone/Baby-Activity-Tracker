@@ -28,10 +28,12 @@ import com.bawp.babytrackerapp.components.ButtonChips
 import com.bawp.babytrackerapp.components.ButtonChipsColors
 import com.bawp.babytrackerapp.components.MainAppBar
 import com.bawp.babytrackerapp.components.showToast
+import com.bawp.babytrackerapp.model.Activity
 import com.bawp.babytrackerapp.model.Diaper
 import com.bawp.babytrackerapp.screens.feed.ShowBottleView
 import com.bawp.babytrackerapp.screens.feed.ShowBreastView
 import com.bawp.babytrackerapp.util.getTime
+import com.bawp.babytrackerapp.util.saveActivityToFirebase
 import com.bawp.babytrackerapp.util.saveDiaperToFirebase
 import com.google.firebase.auth.FirebaseAuth
 import java.time.Instant
@@ -105,14 +107,6 @@ fun ShowDiaperStatusView(
         Color(0xFFA5A7A5))
 
 
-    val pooStatusColorListString = listOf(
-        "Green",
-        "Yellow",
-        "Brown",
-        "DarkGray",
-        "Red",
-        "LightGray")
-
 
     val selectedIndex = remember {
         mutableStateOf(0)
@@ -170,7 +164,7 @@ fun ShowDiaperStatusView(
                     isShowPoopColor.value = false
                 }
                 3 -> {statusSelectedState.value = "Mixed"
-                    isShowPoopColor.value = false}
+                    isShowPoopColor.value = true}
 
 
             }
@@ -205,19 +199,19 @@ fun ShowDiaperStatusView(
 
 
         OutlinedButton(onClick = {
-            if (dateEntered.isNullOrBlank() || timeEntered.isNullOrEmpty() || statusSelectedState.value.isEmpty()){
+            if (dateEntered.isNullOrBlank() || timeEntered.isNullOrEmpty()){
                 //show message! No go!
 
             }else {
-                val diaper = Diaper(
+                val diaper = Activity(
                     userId = FirebaseAuth.getInstance().currentUser?.uid.toString(),
                     babyId = "IdHoPLrao8NpyWKS0d1G", //for now
                     activityType = "Diaper",
                     date = dateEntered ,
                     timeEntered = timeEntered,
                     status = statusSelectedState.value, //clean, poo, pee, mixed
-                    color = pooStatusSelectedState.value) //colors
-                saveDiaperToFirebase(diaper, navController)
+                    color = pooStatusSelectedState.value,) //colors
+                saveActivityToFirebase(diaper, navController)
 
             }
 

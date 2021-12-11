@@ -1,7 +1,6 @@
 package com.bawp.babytrackerapp.di
 
-import com.bawp.babytrackerapp.repository.FireDiaperRepo
-import com.bawp.babytrackerapp.repository.FireRepository
+import com.bawp.babytrackerapp.repository.*
 import com.google.firebase.firestore.FirebaseFirestore
 import dagger.Module
 import dagger.Provides
@@ -26,6 +25,26 @@ object AppModule {
     fun provideFireDiapersRepository()
             = FireDiaperRepo(fireDiaperQuery = FirebaseFirestore.getInstance()
         .collection("diapers"))
+
+
+    @Singleton
+    @Provides
+    fun provideFireActivityRepository()
+            = FireActivityRepo(activityQuery = FirebaseFirestore.getInstance()
+        .collection("activities"))
+
+
+    @Singleton
+    @Provides
+    fun provideFireUserRepository()
+            = FireUserRepo(userQuery = FirebaseFirestore.getInstance()
+        .collection("users"))
+
+    @Singleton
+    @Provides
+    fun provideFireBabiesRepository()
+            = FireBabyRepo(babyQuery = FirebaseFirestore.getInstance()
+        .collection("babies"))
 
 
 }

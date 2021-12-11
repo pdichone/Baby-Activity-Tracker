@@ -1,7 +1,6 @@
 package com.bawp.babytrackerapp.screens.main
 
 import android.util.Log
-import androidx.activity.compose.LocalActivityResultRegistryOwner.current
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -25,19 +24,28 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.bawp.babytrackerapp.R
-import com.bawp.babytrackerapp.model.Feed
+import com.bawp.babytrackerapp.model.Activity
 import com.bawp.babytrackerapp.navigation.BabyScreens
 import com.google.firebase.auth.FirebaseAuth
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material.icons.filled.MoreVert
+import androidx.compose.ui.draw.rotate
+import androidx.compose.ui.platform.LocalUriHandler
+import androidx.compose.ui.text.capitalize
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.toUpperCase
+import coil.compose.rememberImagePainter
+import coil.transform.CircleCropTransformation
+import com.bawp.babytrackerapp.model.Baby
 import com.bawp.babytrackerapp.model.Diaper
-import okhttp3.internal.format
+import com.bawp.babytrackerapp.model.MUser
+import com.bawp.babytrackerapp.util.HexToJetpackColor
+import java.lang.String.format
 import java.time.format.DateTimeFormatter
 import java.util.*
+
 
 @Composable
 fun MainScreen(
@@ -45,19 +53,20 @@ fun MainScreen(
               ) {
 
 
-
-    var listOfFeeds = emptyList<Feed>()
+var listOBabies = emptyList<Baby>()
+var listOfUsers = emptyList<MUser>()
+    var listOfActivities = emptyList<Activity>()
     var listOfDiapers = emptyList<Diaper>()
 
     val currentUser = FirebaseAuth.getInstance().currentUser
     var status by remember {
         mutableStateOf(false)
     }
+    var babyObject by remember {
+        mutableStateOf(Baby())
+    }
 
-
-
-
-    Scaffold(topBar = {
+        Scaffold(topBar = {
         TopAppBar(title = {
             Text(text = "Hello, Raf")
         }, navigationIcon = {
@@ -80,9 +89,19 @@ fun MainScreen(
 
         }
     }) {
+
+
+            if (viewModel.fireUserData.value.data.isNullOrEmpty()) {
+                //do nothing
+            }else {
+                listOfUsers = viewModel.fireUserData.value.data!!.filter {
+                     it.userId == currentUser!!.uid
+
+                }
+            }
         if (viewModel.data.value.data.isNullOrEmpty()) {
             CircularProgressIndicator()
-            
+
             Text(text = "Nope")
             status = true
 
@@ -90,17 +109,18 @@ fun MainScreen(
             viewModel.data.value.loading = false
             status = false
 
-            listOfFeeds = viewModel.data.value.data!!.toList()
+            listOfActivities = viewModel.data.value.data!!.toList()
 
-            Log.d("Feeds", "HomeContent: $listOfFeeds")
+            Log.d("Activities", "HomeContent: $listOfActivities")
         }
 
-        if (viewModel.diaperData.value.data.isNullOrEmpty()) {
-
-        }else {
-            listOfDiapers = viewModel.diaperData.value.data!!.toList()
-            Log.d("Diapers", "HomeContent: $listOfDiapers")
-        }
+            if (viewModel.fireBabyData.value.data.isNullOrEmpty()) {
+                //do nothing
+            }else {
+                listOBabies = viewModel.fireBabyData.value.data!!.toList()
+                babyObject = listOBabies[0]
+                Log.d("Babies", "MainScreen: $babyObject")
+            }
 
         Surface {
 
@@ -129,21 +149,31 @@ fun MainScreen(
                                     .clip(shape = CircleShape)
                                     .padding(6.dp)
                                     .clickable {
-                                        //go to baby settings
                                         navController.navigate(BabyScreens.BabySettingsScreen.name)
-                                    }, color = Color(0xFDD6D1D6)
+                                    }
                                    ) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.baby_boy),
+
+                                Image(painter = rememberImagePainter( babyObject.pic.toString(),
+                                    builder = {
+                                        transformations(CircleCropTransformation())
+                                    }),
                                     contentDescription = null,
-                                    modifier = Modifier
-                                        .size(45.dp)
-                                        .padding(6.dp)
+                                    modifier = Modifier.size(100.dp)
                                      )
+
                             }
-                            Column(modifier = Modifier.padding(4.dp)) {
-                                Text(text = "Rafael", style = MaterialTheme.typography.subtitle2)
-                                Text(text = "2 Weeks", style = MaterialTheme.typography.caption)
+
+//                            val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy'T'HH:mm:ss'Z'")
+//                            val date = format("MM/dd/yyyy'T'HH:mm:ss'Z'", cal)
+                            //val date: String =
+                               // SimpleDateFormat.format("dd-MM-yyyy hh:mm:ss", cal).toString()
+                           // Log.d("DOBx", "DOBx: ${ babyObject.dob}")
+                            Column(modifier = Modifier.padding(4.dp),
+                                  verticalArrangement = Arrangement.Center) {
+                                Text(text = babyObject.name.toString().uppercase(locale = Locale.US),
+                                    style = MaterialTheme.typography.h6)
+                             if (babyObject.dob != null) Text(text = babyObject.dob!!.toDate().getTimeAgo(),
+                                 style = MaterialTheme.typography.body2)
                             }
 
                         }
@@ -153,14 +183,6 @@ fun MainScreen(
                 }
 
                 //Last 24 hours
-
-                Text(
-                    text = "Last 24 Hours".uppercase(),
-                    modifier = Modifier.alpha(alpha = 0.3f),
-                    style = MaterialTheme.typography.h5,
-                    textDecoration = TextDecoration.Underline,
-                    fontWeight = FontWeight.Bold
-                    )
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -180,14 +202,17 @@ fun MainScreen(
                 if (status) {
                     //LinearProgressIndicator()
                 } else {
-                   // status = false
+                    // status = false
                     //Show all activities here
-                    Column(Modifier.padding(6.dp), verticalArrangement = Arrangement.Center,
-                        horizontalAlignment = Alignment.CenterHorizontally) {
+                    Column(
+                        Modifier.padding(6.dp),
+                        verticalArrangement = Arrangement.Center,
+                        horizontalAlignment = Alignment.CenterHorizontally
+                          ) {
 
                         LazyColumn() {
-                            items(items = listOfFeeds.toList()) { item: Feed ->
-                                FeedCard(item)
+                            items(items = listOfActivities.toList()) { item: Activity ->
+                                FeedCard(item, listOfUsers)
 
                             }
                         }
@@ -203,21 +228,30 @@ fun MainScreen(
 }
 
 @Composable
-private fun FeedCard(item: Feed) {
+private fun FeedCard(item: Activity, listOfUsers: List<MUser>) {
 
-    Row(Modifier) {
+    Row {
         Column(
             Modifier
                 .height(IntrinsicSize.Min)
-                .fillMaxHeight()
+
               ) {
             Surface(
-                Modifier.padding(5.dp), shape = CircleShape, color = Color(0xFFDDD3EC)
+                Modifier
+                    .padding(5.dp)
+                    .wrapContentSize(Alignment.Center),
+                shape = CircleShape,
+                color = Color(0xFFDDD3EC)
                    ) {
                 Icon(
-                    painter = painterResource(id = R.drawable.feeding_bottle),
+                    painter = painterResource(
+                        id = if (item.activityType == "Feed") R.drawable.feeding_bottle else if(item.activityType == "Diaper") R.drawable.diaper_icon else R.drawable.breastfeeding
+                                             ),
                     contentDescription = null,
-                    modifier = Modifier.size(35.dp)
+                    modifier = Modifier
+                        .size(35.dp)
+                        .padding(3.dp)
+                        .rotate(degrees = -14f)
                     )
             }
         }
@@ -225,7 +259,7 @@ private fun FeedCard(item: Feed) {
 
         Card(
             modifier = Modifier
-                .padding(5.dp)
+                .padding(2.dp)
                 .fillMaxWidth(),
             shape = RectangleShape,
             elevation = 5.dp
@@ -242,7 +276,7 @@ private fun FeedCard(item: Feed) {
 
                 Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
                     Text(
-                        text = " ${date}, ${item.timeEntered}",
+                        text = "${date},${item.timeEntered}",
                         style = MaterialTheme.typography.caption
                         )
                     Icon(imageVector = Icons.Default.MoreVert,
@@ -257,17 +291,20 @@ private fun FeedCard(item: Feed) {
                     verticalAlignment = Alignment.CenterVertically,
                     modifier = Modifier.padding(4.dp)
                    ) {
-                    Text(text = "Feed")
+                    Text(text = item.activityType.toString(),
+                        color = Color(0xFF009688),
+                        fontWeight = FontWeight.SemiBold
+                        )
                     Spacer(modifier = Modifier.width(3.dp))
-                    Surface(
+                    if (item.activityType == "Feed" || item.activityType == "Breast") Surface(
                         Modifier
                             .padding(5.dp)
                             .wrapContentWidth(),
                         shape = CircleShape,
                         color = Color(0xFFCFB2FB)
-                           ) {
+                                                            ) {
                         Text(
-                            text = item.feed!!,
+                            text = if (item.activityType == "Feed")item.feed!! else item.activityType.toString() ,
                             color = Color.White,
                             fontWeight = FontWeight.SemiBold,
                             fontStyle = FontStyle.Italic,
@@ -278,16 +315,109 @@ private fun FeedCard(item: Feed) {
                     }
                 }
 
-                Text(
-                    text = "Amount: ${item.amount} ml", color = Color.DarkGray
-                    )
-                Text(text = "Type: ${item.foodType}", color = Color.DarkGray)
+                when (item.activityType) {
+                    "Feed" -> {
 
+                        Text(
+                            text = "Amount: ${item.amount} ml", color = Color.DarkGray
+                            )
+                        Text(text = "Type: ${item.foodType}", color = Color.DarkGray)
+                    }
+                    "Diaper" -> {
+                        //Diaper
+
+                        Text(
+                            text = "Status: ${item.status} ", color = Color.DarkGray
+                            )
+                        Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.Center) {
+                            Text(
+                                text = "Color: ", color = Color.DarkGray
+                                )
+                            //fix: https://stackoverflow.com/questions/60247480/color-from-hex-string-in-jetpack-compose
+                            val color = HexToJetpackColor.getColor(item.color.toString().split("x")[1])
+
+
+                            Box(modifier = Modifier
+                                .size(20.dp)
+                                .background(color)) {
+
+                            }
+                        }
+
+                    }
+                    "Breast" -> {
+                        //show breast timer stuff here
+                        Text(
+                            text = "Duration: ${showFormattedSeconds(item.duration!!.toLong())} ", color = Color.DarkGray
+                            )
+
+                        Text(
+                            text = "Left: ${showFormattedSeconds(item.leftDuration!!.toLong())} ", color = Color.DarkGray
+                            )
+                        Text(
+                            text = "Right: ${showFormattedSeconds(item.rightDuration!!.toLong())} ", color = Color.DarkGray
+                            )
+
+
+                    }
+                }
+
+Spacer(modifier = Modifier.height(10.dp))
+                if (listOfUsers.isNotEmpty())Text(text = "By: ${listOfUsers[0].displayName}",
+                                                 style = MaterialTheme.typography.caption,
+                                                 fontStyle = FontStyle.Italic)
             }
-
 
         }
     }
 
 }
 
+//https://stackoverflow.com/questions/19667473/how-to-show-milliseconds-in-dayshoursminseconds
+fun showFormattedSeconds(timeInMilliSeconds: Long): String {
+    val seconds: Long = timeInMilliSeconds / 1000
+    val minutes = seconds / 60
+    val hours = minutes / 60
+    val days = hours / 24
+    val time = days.toString() + ":" + hours % 24 + ":" + minutes % 60 + ":" + seconds % 60
+    return  "" + minutes % 60 + ":" + seconds % 60 + " sec"
+}
+
+fun Date.getTimeAgo(isAge: Boolean =  true): String {
+    val calendar = Calendar.getInstance()
+    calendar.time = this
+    var word = if (isAge) "old" else "ago"
+
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+    val hour = calendar.get(Calendar.HOUR_OF_DAY)
+    val minute = calendar.get(Calendar.MINUTE)
+
+    val currentCalendar = Calendar.getInstance()
+
+    val currentYear = currentCalendar.get(Calendar.YEAR)
+    val currentMonth = currentCalendar.get(Calendar.MONTH)
+    val currentDay = currentCalendar.get(Calendar.DAY_OF_MONTH)
+    val currentHour = currentCalendar.get(Calendar.HOUR_OF_DAY)
+    val currentMinute = currentCalendar.get(Calendar.MINUTE)
+
+    return if (year < currentYear ) {
+        val interval = currentYear - year
+        if (interval == 1) "$interval year $word" else "$interval years $word"
+    } else if (month < currentMonth) {
+        val interval = currentMonth - month
+        if (interval == 1) "$interval month $word" else "$interval months $word"
+    } else  if (day < currentDay) {
+        val interval = currentDay - day
+        if (interval == 1) "$interval day $word" else "$interval days $word"
+    } else if (hour < currentHour) {
+        val interval = currentHour - hour
+        if (interval == 1) "$interval hour $word" else "$interval hours $word"
+    } else if (minute < currentMinute) {
+        val interval = currentMinute - minute
+        if (interval == 1) "$interval minute $word" else "$interval minutes $word"
+    } else {
+        "a moment $word"
+    }
+}

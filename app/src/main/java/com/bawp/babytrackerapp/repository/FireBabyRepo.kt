@@ -2,21 +2,22 @@ package com.bawp.babytrackerapp.repository
 
 import com.bawp.babytrackerapp.data.DataOrException
 import com.bawp.babytrackerapp.model.Activity
+import com.bawp.babytrackerapp.model.Baby
 import com.google.firebase.firestore.FirebaseFirestoreException
 import com.google.firebase.firestore.Query
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class FireRepository @Inject constructor( private val queryFeed: Query){
+class FireBabyRepo @Inject constructor(  private val babyQuery: Query) {
 
-    suspend fun getAllFeeds(): DataOrException<List<Activity>, Boolean, Exception> {
-        val dataOrException = DataOrException<List<Activity>, Boolean, Exception>()
+    suspend fun getAllBabies(): DataOrException<List<Baby>, Boolean, Exception> {
+        val dataOrException = DataOrException<List<Baby>, Boolean, Exception>()
 
         try {
             dataOrException.loading = true
-            dataOrException.data =  queryFeed.get().await().documents.map { documentSnapshot ->
-                documentSnapshot.toObject(Activity::class.java)!!
-            }.asReversed()
+            dataOrException.data =  babyQuery.get().await().documents.map { documentSnapshot ->
+                documentSnapshot.toObject(Baby::class.java)!!
+            }
             if (!dataOrException.data.isNullOrEmpty()) dataOrException.loading = false
 
 
@@ -26,7 +27,4 @@ class FireRepository @Inject constructor( private val queryFeed: Query){
         return dataOrException
 
     }
-
-
-
 }
