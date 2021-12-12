@@ -23,6 +23,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.bawp.babytrackerapp.R
 import com.bawp.babytrackerapp.components.ShowMenuGrid
+import com.bawp.babytrackerapp.model.Baby
 import com.bawp.babytrackerapp.navigation.BabyScreens
 import com.bawp.babytrackerapp.screens.main.MainScreenViewModel
 
@@ -54,6 +55,7 @@ fun MainMenuScreen(navController: NavController,
              when (it) {
                   "Feed" ->   navController.navigate(BabyScreens.FeedScreen.name)
                   "Diaper" ->   navController.navigate(BabyScreens.DiapersScreen.name)
+                 "Pumping" -> navController.navigate(BabyScreens.PumpingScreen.name)
                 // "Pumping" ->   navController.navigate(BabyScreens.PumpingScreen.name)
              }
 

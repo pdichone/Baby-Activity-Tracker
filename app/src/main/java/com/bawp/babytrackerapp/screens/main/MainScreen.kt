@@ -29,6 +29,7 @@ import com.bawp.babytrackerapp.navigation.BabyScreens
 import com.google.firebase.auth.FirebaseAuth
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Column
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.platform.LocalUriHandler
@@ -42,6 +43,7 @@ import com.bawp.babytrackerapp.model.Baby
 import com.bawp.babytrackerapp.model.Diaper
 import com.bawp.babytrackerapp.model.MUser
 import com.bawp.babytrackerapp.util.HexToJetpackColor
+import com.google.firebase.firestore.FirebaseFirestore
 import java.lang.String.format
 import java.time.format.DateTimeFormatter
 import java.util.*
@@ -210,9 +212,9 @@ var listOfUsers = emptyList<MUser>()
                         horizontalAlignment = Alignment.CenterHorizontally
                           ) {
 
-                        LazyColumn() {
+                        LazyColumn {
                             items(items = listOfActivities.toList()) { item: Activity ->
-                                FeedCard(item, listOfUsers)
+                                FeedCard(navController = navController, item, listOfUsers)
 
                             }
                         }
@@ -228,7 +230,7 @@ var listOfUsers = emptyList<MUser>()
 }
 
 @Composable
-private fun FeedCard(item: Activity, listOfUsers: List<MUser>) {
+private fun FeedCard(navController: NavController,item: Activity, listOfUsers: List<MUser>) {
 
     Row {
         Column(
@@ -245,7 +247,12 @@ private fun FeedCard(item: Activity, listOfUsers: List<MUser>) {
                    ) {
                 Icon(
                     painter = painterResource(
-                        id = if (item.activityType == "Feed") R.drawable.feeding_bottle else if(item.activityType == "Diaper") R.drawable.diaper_icon else R.drawable.breastfeeding
+                        id = when (item.activityType) {
+                            "Feed" -> R.drawable.feeding_bottle
+                            "Diaper" -> R.drawable.diaper_icon
+                            "Pumping" -> R.drawable.breast_pump
+                            else -> R.drawable.breastfeeding
+                        }
                                              ),
                     contentDescription = null,
                     modifier = Modifier
@@ -271,6 +278,10 @@ private fun FeedCard(item: Activity, listOfUsers: List<MUser>) {
 
                 val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy'T'HH:mm:ss'Z'")
                 val date = format(item.date!!)
+                val openDialog = remember {
+                    mutableStateOf(false)
+                }
+                CreateAlertDialog(navController = navController, openDialog = openDialog, item = item)
 
 
 
@@ -279,9 +290,13 @@ private fun FeedCard(item: Activity, listOfUsers: List<MUser>) {
                         text = "${date},${item.timeEntered}",
                         style = MaterialTheme.typography.caption
                         )
-                    Icon(imageVector = Icons.Default.MoreVert,
+                    Icon(imageVector = Icons.Default.Delete,
                         contentDescription = null,
-                        modifier = Modifier.clickable { })
+                        modifier = Modifier.clickable {
+                            //first show dialog
+                            openDialog.value = true
+
+                        })
                 }
 
 
@@ -296,15 +311,17 @@ private fun FeedCard(item: Activity, listOfUsers: List<MUser>) {
                         fontWeight = FontWeight.SemiBold
                         )
                     Spacer(modifier = Modifier.width(3.dp))
-                    if (item.activityType == "Feed" || item.activityType == "Breast") Surface(
+                    if (item.activityType == "Feed"
+                        || item.activityType == "Breast" ||
+                            item.activityType == "Pumping") Surface(
                         Modifier
                             .padding(5.dp)
                             .wrapContentWidth(),
                         shape = CircleShape,
-                        color = Color(0xFFCFB2FB)
-                                                            ) {
+                        color = Color(0xFFCFB2FB)) {
                         Text(
-                            text = if (item.activityType == "Feed")item.feed!! else item.activityType.toString() ,
+                            text = if (item.activityType == "Feed")item.feed!!
+                            else item.activityType.toString() ,
                             color = Color.White,
                             fontWeight = FontWeight.SemiBold,
                             fontStyle = FontStyle.Italic,
@@ -360,6 +377,15 @@ private fun FeedCard(item: Activity, listOfUsers: List<MUser>) {
 
 
                     }
+                    "Pumping" -> {
+
+                        Text(
+                            text = "Amount: ${item.amount} ml", color = Color.DarkGray
+                            )
+                        Text(text = "Type: ${item.activityType}", color = Color.DarkGray)
+                    }
+
+
                 }
 
 Spacer(modifier = Modifier.height(10.dp))
@@ -369,6 +395,54 @@ Spacer(modifier = Modifier.height(10.dp))
             }
 
         }
+    }
+
+}
+
+@Composable
+fun CreateAlertDialog(navController: NavController, openDialog: MutableState<Boolean>, item: Activity) {
+
+    if (openDialog.value) {
+
+        AlertDialog(
+            onDismissRequest = {
+                // Dismiss the dialog when the user clicks outside the dialog or on the back
+                // button. If you want to disable that functionality, simply use an empty
+                // onCloseRequest.
+                openDialog.value = false
+            },
+            title = {
+                Text(text = "Delete Activity")
+            },
+            text = {
+                Text("Are you sure you want to delete? ")
+            },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        FirebaseFirestore.getInstance()
+                            .collection("activities")
+                            .document(item.id!!)
+                            .delete().addOnSuccessListener {
+                                openDialog.value = false
+                                navController.navigate(BabyScreens.MainScreen.name)
+                            }.addOnFailureListener {
+                                openDialog.value = false
+                                Log.d("Exception", "CreateAlertDialog: $it")
+                            }
+                    }) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                Button(
+
+                    onClick = {
+                        openDialog.value = false
+                    }) {
+                    Text("Cancel")
+                }
+            })
     }
 
 }

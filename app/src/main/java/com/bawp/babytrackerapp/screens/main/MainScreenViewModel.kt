@@ -38,6 +38,7 @@ class MainScreenViewModel @Inject constructor(
     init {
         getAllActivities()
        getAllBabies()
+        getAllUsers()
     }
 
     private fun getAllBabies() {

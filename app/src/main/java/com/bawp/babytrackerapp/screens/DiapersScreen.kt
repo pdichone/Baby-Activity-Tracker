@@ -288,11 +288,9 @@ fun ShowDiaperLogTimeView(
 
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
+        verticalArrangement = Arrangement.Center
           ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
 
-        }
         Divider()
         Spacer(modifier = Modifier.height(10.dp))
         Row(modifier = Modifier.fillMaxWidth(),
@@ -303,15 +301,17 @@ fun ShowDiaperLogTimeView(
 
             }
 
-            Column(modifier = Modifier.padding(5.dp)) {
 
-                Text(text = "Date: ${dateToShow.value}", style = MaterialTheme.typography.caption)
-                Text(text = "Time: ${time.value}",style = MaterialTheme.typography.caption)
-            }
             OutlinedButton(onClick = { timePickerDialog.show()}, shape = CircleShape) {
                 Text(text = "Time")
 
             }
+        }
+
+        Column(modifier = Modifier.padding(5.dp)) {
+
+            Text(text = "Date: ${dateToShow.value}", style = MaterialTheme.typography.body1)
+            Text(text = "Time: ${time.value}",style = MaterialTheme.typography.body1)
         }
 
 

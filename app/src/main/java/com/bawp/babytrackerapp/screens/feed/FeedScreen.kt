@@ -272,9 +272,11 @@ fun ShowLogTimeView(
                 Text(text = "Date: ${dateToShow.value}", style = MaterialTheme.typography.caption)
                 Text(text = "Time: ${time.value}", style = MaterialTheme.typography.caption)
             }
-            OutlinedButton(onClick = { timePickerDialog.show() }, shape = CircleShape) {
+            OutlinedButton(onClick = {
+                timePickerDialog.show()
+                                     },
+                shape = CircleShape) {
                 Text(text = "Time")
-
             }
         }
 
@@ -302,26 +304,20 @@ fun ShowLogTimeView(
 
 }
 
-private fun getTodaysDate(): String? {
-    val cal = Calendar.getInstance()
-    val year = cal[Calendar.YEAR]
-    var month = cal[Calendar.MONTH]
-    month += 1
-    val day = cal[Calendar.DAY_OF_MONTH]
-    return "$month-$day-$year"
-}
+
 
 @ExperimentalComposeUiApi
 @Composable
-fun VerticalSlider(progressValue: Int? = null, value: (Int) -> Unit) {
+fun VerticalSlider(progressValue: Int? = null,
+                   value: (Int) -> Unit) {
 
     val state = rememberComposeVerticalSliderState()
 
     ComposeVerticalSlider(state = state,
         enabled = state.isEnabled.value,
         progressValue = progressValue,
-        trackColor = Color(0xFFD4E157),
-        progressTrackColor = Color(0xFFFF7043),
+        trackColor = Color(0xFFB5B7B7),
+        progressTrackColor = Color(0xFF848282),
         onProgressChanged = {
             // Log.d("TAG", "VerticalSlider: ${it * 3}")
             value(it * 3) // for mL mult by 3, for oz div by 10.0

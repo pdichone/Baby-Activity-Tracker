@@ -14,6 +14,7 @@ import com.bawp.babytrackerapp.screens.feed.FeedScreen
 import com.bawp.babytrackerapp.screens.login.LoginScreen
 import com.bawp.babytrackerapp.screens.main.MainScreenViewModel
 import com.bawp.babytrackerapp.screens.menu.MainMenuScreen
+import com.bawp.babytrackerapp.screens.pumping.PumpingScreen
 import com.bawp.babytrackerapp.screens.settings.BabySettingsScreen
 
 @ExperimentalFoundationApi
@@ -53,6 +54,10 @@ fun BabyNavigation() {
 
         composable(BabyScreens.DiapersScreen.name) {
             DiapersScreen(navController = navController)
+        }
+
+        composable(BabyScreens.PumpingScreen.name) {
+            PumpingScreen(navController = navController)
         }
 
     }
