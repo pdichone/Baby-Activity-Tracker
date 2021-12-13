@@ -96,13 +96,6 @@ val firestore = FirebaseFirestore.getInstance().collection("babies")
 
               }
 
-
-              //Todo: create a Baby model class
-//              FirebaseFirestore.getInstance().collection("babies")
-//                  .document("IdHoPLrao8NpyWKS0d1G")//for now - later we might need to change this
-//                  .update(
-//                      hashMapOf("name" to name, "dob" to timestamp, "pic" to "") as Map<String, Any>
-//                      )
           }
         }
     }

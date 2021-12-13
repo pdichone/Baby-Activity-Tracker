@@ -293,8 +293,7 @@ fun ShowLogTimeView(
             date = date.value,
             feed = feed,
             timeEntered = time.value,
-            activityType = "Feed"
-                            )
+            activityType = "Feed")
         saveActivityToFirebase(mFeed, navController)
 
     }, shape = CircleShape) {

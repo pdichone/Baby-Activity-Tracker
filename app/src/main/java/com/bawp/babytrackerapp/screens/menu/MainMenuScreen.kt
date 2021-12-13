@@ -46,8 +46,8 @@ fun MainMenuScreen(navController: NavController,
                 title = "Diaper"),
             MenuItems(icon = painterResource(id = R.drawable.breast_pump),
                 title = "Pumping"),
-            MenuItems(icon = painterResource(id = R.drawable.sleeping),
-                title = "Sleep")
+            MenuItems(icon = painterResource(id = R.drawable.notes),
+                title = "Notes")
                          )
 //source: https://alexzh.com/jetpack-compose-building-grids/
         ShowMenuGrid(data) {
@@ -55,8 +55,8 @@ fun MainMenuScreen(navController: NavController,
              when (it) {
                   "Feed" ->   navController.navigate(BabyScreens.FeedScreen.name)
                   "Diaper" ->   navController.navigate(BabyScreens.DiapersScreen.name)
-                 "Pumping" -> navController.navigate(BabyScreens.PumpingScreen.name)
-                // "Pumping" ->   navController.navigate(BabyScreens.PumpingScreen.name)
+                  "Pumping" -> navController.navigate(BabyScreens.PumpingScreen.name)
+                  "Notes" ->   navController.navigate(BabyScreens.NotesScreen.name)
              }
 
         }

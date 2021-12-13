@@ -251,6 +251,7 @@ private fun FeedCard(navController: NavController,item: Activity, listOfUsers: L
                             "Feed" -> R.drawable.feeding_bottle
                             "Diaper" -> R.drawable.diaper_icon
                             "Pumping" -> R.drawable.breast_pump
+                            "Notes" -> R.drawable.notes
                             else -> R.drawable.breastfeeding
                         }
                                              ),
@@ -383,6 +384,15 @@ private fun FeedCard(navController: NavController,item: Activity, listOfUsers: L
                             text = "Amount: ${item.amount} ml", color = Color.DarkGray
                             )
                         Text(text = "Type: ${item.activityType}", color = Color.DarkGray)
+                    }
+
+                    "Notes" -> {
+
+                        Text(
+                            text = " ${item.note}", color = Color.DarkGray,
+                             softWrap = true
+                            )
+                        //Text(text = "Type: ${item.}", color = Color.DarkGray)
                     }
 
 

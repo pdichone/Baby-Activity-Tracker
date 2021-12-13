@@ -50,4 +50,11 @@ var amount: Int? = null,
     @get:PropertyName("breast_entry_timestamp")
     @set:PropertyName("breast_entry_timestamp")
     var breastEntryTimeStamp: Timestamp? = null,
+
+
+    var note: String? = null,
+
+    @get:PropertyName("note_timestamp")
+    @set:PropertyName("note_timestamp")
+    var noteTimestamp: Timestamp? = null
                    )

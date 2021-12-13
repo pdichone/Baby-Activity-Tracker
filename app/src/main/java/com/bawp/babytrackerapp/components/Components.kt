@@ -65,10 +65,12 @@ fun EmailInput(
     emailState: MutableState<String>,
     labelId: String = "Email",
     enabled: Boolean = true,
+    isSingleLine: Boolean = false,
     imeAction: ImeAction = ImeAction.Next,
     onAction: KeyboardActions = KeyboardActions.Default
               ) {
     InputField(modifier = modifier,
+        isSingleLine = isSingleLine,
         valueState = emailState,
         labelId = labelId,
         enabled = enabled,
